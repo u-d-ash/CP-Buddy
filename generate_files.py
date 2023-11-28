@@ -1,8 +1,22 @@
 import cfwebscrape
+import atwebscrape
 import os
+import sys
 
-questions = cfwebscrape.get_queslist()
-contest_name = cfwebscrape.get_contestname()
+#usage : python generate_files.py {at/cf} {contest link}
+if(len(sys.argv) < 3):
+    print("Usage: python generate_files.py {at/cf} {contest link}")
+    sys.exit(1)
+
+SITE = sys.argv[1]
+LINK = sys.argv[2]
+
+if(SITE == 'at'):
+    questions = atwebscrape.get_queslist(LINK)
+    contest_name = atwebscrape.get_contestname(LINK)
+elif(SITE == 'cf'):
+    questions = cfwebscrape.get_queslist(LINK)
+    contest_name = cfwebscrape.get_contestname(LINK)
 
 try:
     os.mkdir(contest_name)
