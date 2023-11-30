@@ -1,12 +1,12 @@
 import requests
 from bs4 import BeautifulSoup
 
-class cf_webscrape:
+class cfwebscrape:
 
     def __init__(self, contest_link):
 
         self.CONTEST_LINK = contest_link
-        self.CONTEST_NAME = contest_link.removeprefix("https://codeforces.com/contest/")
+        self.CONTEST_NAME = "cf" + contest_link.removeprefix("https://codeforces.com/contest/")
 
         html = requests.get(contest_link).text
 
@@ -60,19 +60,5 @@ class cf_webscrape:
 
         return input_list, output_list
 
-
-if __name__ == "__main__":
-
-    cf_contest = cf_webscrape("https://codeforces.com/contest/1900")
-
-    for ques in cf_contest.QUESTION_NAMES:
-
-        print(ques)
-        print('----')
-        inp, out = cf_contest.get_testCases(ques)
-
-        for i in range(len(inp)):
-            print(inp[i])
-            print(out[i])
 
 

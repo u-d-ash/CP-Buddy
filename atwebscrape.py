@@ -47,18 +47,3 @@ class atwebscrape:
                 output_list.append(tcs[i])
         
         return input_list, output_list
-
-if __name__ == "__main__":
-    
-    contest = atwebscrape("https://atcoder.jp/contests/abc330")
-
-    for ques in contest.QUESTION_NAMES:
-
-        inp, out = contest.get_testCases(ques)
-
-        print(ques)
-        print("---")
-
-        for i in range(len(inp)):
-            print(inp[i])
-            print(out[i])
