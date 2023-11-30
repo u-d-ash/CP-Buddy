@@ -1,24 +1,64 @@
 import requests
 from bs4 import BeautifulSoup
 
-def get_contestname(CONTEST_LINK):
-    return CONTEST_LINK.removeprefix("https://atcoder.jp/contests/")
+class atwebscrape:
 
-def get_queslist(CONTEST_LINK):
+    def __init__(self, contest_link):
+        self.CONTEST_LINK = contest_link
+        self.CONTEST_NAME = contest_link.removeprefix("https://atcoder.jp/contests/")
 
-    QUESTIONS_LINK = CONTEST_LINK + "/tasks"
-    html_text = requests.get(QUESTIONS_LINK).text
-    html_text = "".join(line.strip() for line in html_text.split("\n"))
-    soup = BeautifulSoup(html_text, 'lxml')
+        tasks_link = contest_link + "/tasks"
+        html = requests.get(tasks_link).text
+        soup = BeautifulSoup(html, 'lxml')
 
-    table = soup.find('table', class_ = "table table-bordered table-striped")
-    tbody = table.find('tbody')
-    trs = tbody.find_all('tr')
-    names = []
-    for tr in trs:
-        name = tr.find('a').text
-        names.append(name + ".cpp")
+        #--- To get task names (A, B.. etc) ---
+
+        table = soup.find('table', class_ = "table table-bordered table-striped")
+        tbody = table.find('tbody')
+        trs = tbody.find_all('tr')
+        names = []
+        for tr in trs:
+            name = tr.find('a').text
+            names.append(name)
+
+        self.QUESTION_NAMES = names
+    
+    def get_testCases(self, ques):
+        ques_link = self.CONTEST_LINK + "/tasks/" + self.CONTEST_NAME + "_" + ques.lower()
+
+        html = requests.get(ques_link).text
+        soup = BeautifulSoup(html, 'lxml')
+
+        the_divs = soup.find_all('div', class_ = "part")
+        tcs = []
+        for div in the_divs:
+
+            h3_text = div.find('h3').text
+            if("Sample" in h3_text):
+                tcs.append(div.find('pre').get_text())
         
-    return names
+        input_list = []
+        output_list = []
 
-    print(names)
+        for i in range(len(tcs)):
+            if(i % 2 == 0):
+                input_list.append(tcs[i])
+            else:
+                output_list.append(tcs[i])
+        
+        return input_list, output_list
+
+if __name__ == "__main__":
+    
+    contest = atwebscrape("https://atcoder.jp/contests/abc330")
+
+    for ques in contest.QUESTION_NAMES:
+
+        inp, out = contest.get_testCases(ques)
+
+        print(ques)
+        print("---")
+
+        for i in range(len(inp)):
+            print(inp[i])
+            print(out[i])

@@ -1,32 +1,78 @@
 import requests
 from bs4 import BeautifulSoup
 
-def get_queslist(CONTEST_LINK):
+class cf_webscrape:
 
-    html_text = requests.get(CONTEST_LINK).text
-    html_text = "".join(line.strip() for line in html_text.split("\n"))
-    soup = BeautifulSoup(html_text, 'lxml')
+    def __init__(self, contest_link):
+
+        self.CONTEST_LINK = contest_link
+        self.CONTEST_NAME = contest_link.removeprefix("https://codeforces.com/contest/")
+
+        html = requests.get(contest_link).text
+
+        soup = BeautifulSoup(html, 'lxml')
+
+        #--- Getting the question names (A, B, ...)---
+
+        table = soup.find_all('table', class_ = 'problems')
+        trs = table[0].find_all('tr')
+
+        questions = []
+
+        for tr in trs:
+            a = []
+            for td in tr.find_all('td'):
+                name = td.find('a').text
+                name = "".join(line.strip() for line in name.split("\n"))
+                a.append(name)
+            
+            if(len(a) >= 1):
+                questions.append(a[0])
         
-    table = soup.find_all('table', class_ = 'problems')
-    trs = table[0].find_all('tr')
-
-    Questions = []
-
-    for i, tr in enumerate(trs):
-        luls = []
-        for j, td in enumerate(trs[i].find_all('td')):
-            luls.append(td.find('a').text)
-        
-        if(len(luls) >= 1):
-            Questions.append(luls[0] + ".cpp")
+        self.QUESTION_NAMES = questions
     
-    return Questions
+    def get_testCases(self, ques):
+        
+        # ques = A, B... etc
+        ques_link = self.CONTEST_LINK + "/problem/" + ques
+        html = requests.get(ques_link).text
+        soup = BeautifulSoup(html, 'lxml')
+        div = soup.find('div', class_ = 'sample-test')
+        input_divs = div.find_all('div', class_ = 'input')
+        output_divs = div.find_all('div', class_ = 'output')
+        
+        input_list = []
+        output_list = []
 
-def get_contestname(CONTEST_LINK):
+        for input_div in input_divs:
+            pre_tag = input_div.find('pre')
+            sub_divs = pre_tag.find_all('div')
+            if(len(sub_divs) == 0):
+                input_list.append(pre_tag.text)
+            else:
+                in_text = ""
+                for div in sub_divs:
+                    in_text += (div.text + "\n")
+                input_list.append(in_text)
+        
+        for output_div in output_divs:
+            output_list.append(output_div.find('pre').text)
 
-    return CONTEST_LINK.removeprefix("https://codeforces.com/contest/")
+        return input_list, output_list
 
 
+if __name__ == "__main__":
 
+    cf_contest = cf_webscrape("https://codeforces.com/contest/1900")
+
+    for ques in cf_contest.QUESTION_NAMES:
+
+        print(ques)
+        print('----')
+        inp, out = cf_contest.get_testCases(ques)
+
+        for i in range(len(inp)):
+            print(inp[i])
+            print(out[i])
 
 
