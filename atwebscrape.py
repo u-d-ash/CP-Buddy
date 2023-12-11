@@ -35,7 +35,9 @@ class atwebscrape:
 
             h3_text = div.find('h3').text
             if("Sample" in h3_text):
-                tcs.append(div.find('pre').get_text())
+                final_text = div.find('pre').get_text().rstrip()
+                final_text = final_text.replace('\r', '')
+                tcs.append(final_text)
         
         input_list = []
         output_list = []

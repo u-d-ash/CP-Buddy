@@ -1,5 +1,5 @@
 import requests
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, NavigableString, Tag
 
 class cfwebscrape:
 
@@ -48,17 +48,48 @@ class cfwebscrape:
             pre_tag = input_div.find('pre')
             sub_divs = pre_tag.find_all('div')
             if(len(sub_divs) == 0):
-                input_list.append(pre_tag.text)
+                input = ""
+                i = 0
+                for lol in pre_tag.findAll('br'):
+                    next_s = lol.previousSibling
+                    input += str(next_s).strip()
+                    if(i != len(pre_tag.findAll('br')) - 1):
+                        input += "\n"
+                    i += 1
+                input_list.append(input)
             else:
                 in_text = ""
+                i = 0
                 for div in sub_divs:
-                    in_text += (div.text + "\n")
+                    if(i == len(sub_divs) - 1):
+                        in_text += (div.text)
+                    else:
+                        in_text += (div.text + "\n")
+                    i += 1
+                
                 input_list.append(in_text)
         
         for output_div in output_divs:
-            output_list.append(output_div.find('pre').text)
+            output = ""
+            outpre_tag = output_div.find('pre')
 
+            if(len(outpre_tag.findAll('br')) == 0):
+                final_text = outpre_tag.text.lstrip()
+                final_text = final_text.rstrip()
+                output_list.append(final_text)
+            else:
+                i = 0
+                for lol in outpre_tag.findAll('br'):
+                    next_s = lol.previousSibling
+                    output += str(next_s).strip()
+                    if(i != len(outpre_tag.findAll('br')) - 1):
+                        output += "\n"
+                    i += 1
+                output_list.append(output)
+    
         return input_list, output_list
+
+
 
 
 
