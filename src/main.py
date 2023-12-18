@@ -1,8 +1,10 @@
 from atwebscrape import atwebscrape
 from cfwebscrape import cfwebscrape
+import submit
 import os
 import sys
 import subprocess
+from playwright.sync_api import sync_playwright
 
 def equality(stdout, output):
         
@@ -57,30 +59,36 @@ class contest_activity:
             with open(file_name, "w") as f:
                 f.write(template_content)
         
-
-        testFolder_path = os.path.join(root_dir, "tests")
-        os.mkdir(testFolder_path)
-
-        for quest in questions:
-            questTestFolder_path = os.path.join(testFolder_path, quest)
-            os.mkdir(questTestFolder_path)
-
-            inps, outs = self.CONTEST.get_testCases(quest)
-
-            for i in range(len(inps)):
-                inp_file = os.path.join(questTestFolder_path, f"inp_{i + 1}.txt")
-                out_file = os.path.join(questTestFolder_path, f"out_{i + 1}.txt")
-
-                with open(inp_file, "w") as f:
-                    f.write(inps[i])
-                
-                with open(out_file, "w") as f:
-                    f.write(outs[i])
-
-
     def open_file(self, ques):
  
         os.system(f"code {self.CONTEST.CONTEST_NAME}/{ques}.cpp")
+    
+    #---- SUBMIT FUNCTIONS ----
+        
+    def cf_submit(self, ques):
+
+        with open(f"{self.CONTEST.CONTEST_NAME}/{ques}.cpp") as file:
+            code = file.read()
+        
+        with sync_playwright() as p:
+
+            # testing_submit.py code here !
+
+            print("submit")
+
+
+    # def at_submit(self, ques)
+    
+    def submit(self, ques):
+    
+        if(self.SITE == 'cf'):
+            self.cf_submit(ques)
+        else:
+            at_submit(ques)
+
+
+
+
 
     
     def check(self, ques):
@@ -129,8 +137,7 @@ def main():
         elif(p_command == "check"):
             the_contest_activity.check(command_split[1])
         elif(p_command == "submit"):
-            #lmao
-            print("submit")
+            the_contest_activity.submit(command_split[1])
         elif(p_command == "rank"):
             #lmao
             print("rank")

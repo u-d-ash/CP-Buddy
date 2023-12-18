@@ -1,16 +1,29 @@
+--- Easy ones ! --- (Beautiful Soup)
+
 1. get problems (*)
 2. get test_cases (*)
 3. generate files (*)
 4. file management functions within the python script
     * open function (*)
 5. implement check function (*)
-5.25 : implement clear function
-6. implement submit function
-    * should also give the final result !
-7. implement rank function
-    * should return the current rank of the user
+5.25 : implement clear function (*)
+
+--- Webdrivers and stuff --- 
+
+5.5 : User Authentication 
+
+6. implement submit function [1]
+    * should also give the final result ! [2]
+7. implement rank function [3]
+    * should return the current rank of the user 
     * also return specified user's rank
-7.5 : Soft features : UX
+
+--- Final Touches ---
+
 8. Exception handling
+
+--- Coding Job Done ---
+
 9. Testing
-10. Deploy
+10. Deployment
+
