@@ -10,13 +10,21 @@
 
 --- Webdrivers and stuff --- 
 
-5.5 : User Authentication 
+Current Tasks:
 
-6. implement submit function [1]
-    * should also give the final result ! [2]
-7. implement rank function [3]
-    * should return the current rank of the user 
-    * also return specified user's rank
+--- Codeforces ---
+
+1. Unified User Login
+2. Adjust Code for Practice & Contest modes
+3. Write Submit Function for both modes
+    * New Terminal Window
+    * Codeforces API used
+    * Single Submission at a time ... Can be improved later on
+
+4. Implement Rank Function
+    * Should be Easy with Codeforces API
+
+--- AtCoder ---
 
 --- Final Touches ---
 
