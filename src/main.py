@@ -1,23 +1,24 @@
-from imports import *
+import sys
+from contestmode import contestmode
+from practicemode import practicemode
+from config import *
 
 def main():
     # usage (contest mode): 
-    # -> python main.py cf c https://codeforces.com/contest/1907
+    # -> python main.py c cf https://codeforces.com/contest/1907
 
     # usage (practice mode)
-    # -> python main.py cf p
+    # -> python main.py p
 
     # more debugging checks to be added
-
+    
     if(len(sys.argv) == 2):
 
-        SITE = sys.argv[1]
+        practicemode().play()
 
-        practicemode(SITE).play()
+    elif(len(sys.argv) == 4):
 
-    elif(len(sys.argv) == 3):
-
-        SITE = sys.argv[1]
+        SITE = sys.argv[2]
         LINK = sys.argv[3]
 
         contestmode(SITE, LINK).play()

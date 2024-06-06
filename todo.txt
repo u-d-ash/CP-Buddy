@@ -1,37 +1,6 @@
---- Easy ones ! --- (Beautiful Soup)
-
-1. get problems (*)
-2. get test_cases (*)
-3. generate files (*)
-4. file management functions within the python script
-    * open function (*)
-5. implement check function (*)
-5.25 : implement clear function (*)
-
---- Webdrivers and stuff --- 
-
-Current Tasks:
-
---- Codeforces ---
-
-1. Unified User Login
-2. Adjust Code for Practice & Contest modes
-3. Write Submit Function for both modes
-    * New Terminal Window
-    * Codeforces API used
-    * Single Submission at a time ... Can be improved later on
-
-4. Implement Rank Function
-    * Should be Easy with Codeforces API
-
---- AtCoder ---
-
---- Final Touches ---
-
-8. Exception handling
-
---- Coding Job Done ---
-
-9. Testing
-10. Deployment
-
+TODO:
+--------
+* AtCoder Submit & Rank : For Practice Mode & Contest Mode
+* Finishing Touches : Directory Management, Loading Widgets, Bug Fixing
+* Testing
+* Deployment

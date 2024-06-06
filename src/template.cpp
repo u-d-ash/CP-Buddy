@@ -11,13 +11,20 @@
 #include <unordered_set>
 #include <chrono>
 #include <cstring>
+#include <stack>
 
 #define ll long long
 #define pb push_back
 #define pf push_front
 #define mp make_pair
 
-#define INF 10000000000
+#define vll vector<ll>
+#define vvll vector< vector<ll> >
+#define pll pair<ll, ll>
+#define vpll vector< pair<ll, ll> >
+#define vbool vector<bool>
+
+#define INF 100000000000000000
 #define MOD 1000000007
 
 #define rep(i, n) for(int i = 0; i < n; ++i)
@@ -29,7 +36,9 @@ using namespace std;
 using namespace std::chrono;
 
 void solvetc(){
+
     //code here
+
 }
 
 int main(){
@@ -37,10 +46,23 @@ int main(){
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
 
-    int t;
-    cin >> t;
+    //freopen("input.in", "r", stdin);
+    //freopen("output.out", "w", stdout);
+
+    bool TC = true;
+
+    ll t;
+
+    if(TC){
+        cin >> t;
+    }else{
+        t = 1;
+    }
+
     while(t--){
+
         solvetc();
+
     }
 
     auto stop = high_resolution_clock::now();

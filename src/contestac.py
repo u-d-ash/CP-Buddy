@@ -1,4 +1,12 @@
-from imports import *
+import os
+import subprocess
+from atwebscrape import atwebscrape
+from cfwebscrape import cfwebscrape
+from config import config_dict
+from playwright.sync_api import sync_playwright
+import sys
+import requests
+import json
 
 def equality(stdout, output):
         
@@ -33,6 +41,7 @@ class contest_activity:
 
         if(site == 'at'):
             self.CONTEST = atwebscrape(link)
+
         elif(site == 'cf'):
             self.CONTEST = cfwebscrape(link)
         
@@ -56,26 +65,54 @@ class contest_activity:
     def open_file(self, ques):
  
         os.system(f"code {self.CONTEST.CONTEST_NAME}/{ques}.cpp")
-    
-    #---- SUBMIT FUNCTIONS (TO BE ADDED) ----
-        
-        
-    def cf_submit(self, ques):
-
-        print("cfsubmit")
-    
-    def at_submit(self, ques):
-
-        print("atsubmit")
-
-    
-    def submit(self, ques):
+     
+    def submit(self, ques, page):
     
         if(self.SITE == 'cf'):
-            self.cf_submit(ques)
-        elif(self.SITE == 'at'):
-            self.at_submit(ques)
+            
+            file_name = ques + ".cpp"
 
+            file_path = f"{sys.path[0]}/{self.CONTEST.CONTEST_NAME}/{file_name}"
+
+            cont_id = self.CONTEST.CONTEST_NAME[2:]
+
+            page.goto(f'https://codeforces.com/contest/{cont_id}/submit')
+
+            list_index = ord(ques) - ord('A') + 1
+
+            page.locator('[name="submittedProblemIndex"]').select_option(index = list_index)
+            with page.expect_file_chooser() as fc_info:
+                page.click('[name="sourceFile"]')
+
+            file_chooser = fc_info.value
+            file_chooser.set_files(file_path)
+            page.click('[value = "Submit"]')
+
+            ## TODO : ADD SOME SORT OF LOADING WIDGET HERE !!!
+
+            ver = "TESTING"
+
+            while(ver == "TESTING"):
+                response = requests.get(f"https://codeforces.com/api/user.status?handle={config_dict['CF_USERNAME']}&from=1&count=1")
+                json_dict = json.loads(response.text)
+
+                stat = json_dict["status"]
+
+                if(stat != "OK"):
+                    continue
+                
+                ver = json_dict["result"][0]["verdict"]
+            
+            if(ver == "OK"):
+
+                print("ACCEPTED !!!")
+            
+            else:
+
+                print(ver)
+
+        elif(self.SITE == 'at'):
+            pass
 
     def check(self, ques):
 
@@ -100,3 +137,34 @@ class contest_activity:
                 print(act_outs[i])
                 print("Actual output : ")
                 print(outs[i])
+
+    def rank(self, username):
+
+        cont_id = self.CONTEST.CONTEST_NAME[2:]
+
+        stat = "NOTOK"
+
+        while(stat != "OK"):
+
+            response = requests.get(f"https://codeforces.com/api/contest.standings?contestId={cont_id}&handles={username}")
+            resp_dict = json.loads(response.text)
+
+            stat = resp_dict["status"]
+        
+        if(len(resp_dict["result"]["rows"]) == 0):
+            print(f"{username} is not participating in the contest")
+            return
+        
+
+        rank = resp_dict["result"]["rows"][0]["rank"]
+        points = resp_dict["result"]["rows"][0]["points"]
+        penalty = resp_dict["result"]["rows"][0]["penalty"]
+
+        print(f"{username} is at rank {rank} with {points} points and {penalty} in penalties")
+        return
+        
+
+
+
+
+        

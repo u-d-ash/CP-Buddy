@@ -1,5 +1,13 @@
-from imports import *
+import os
+import sys
+import subprocess
+from playwright.sync_api import sync_playwright
+import requests
+from config import *
+from bs4 import BeautifulSoup
+import json
 
+# For check function
 def equality(stdout, output):
         
     std = stdout.split("\n")
@@ -25,7 +33,7 @@ def equality(stdout, output):
     
     return True
 
-
+# Scrapes the question page
 def TCScraper(site, ques):
 
     if(site == 'at'):
@@ -78,16 +86,21 @@ def TCScraper(site, ques):
         for input_div in input_divs:
             pre_tag = input_div.find('pre')
             sub_divs = pre_tag.find_all('div')
+
             if(len(sub_divs) == 0):
                 input = ""
                 i = 0
-                for lol in pre_tag.findAll('br'):
-                    next_s = lol.previousSibling
-                    input += str(next_s).strip()
-                    if(i != len(pre_tag.findAll('br')) - 1):
-                        input += "\n"
-                    i += 1
-                input_list.append(input)
+                if(len(pre_tag.findAll('br')) != 0):
+                    for lol in pre_tag.findAll('br'):
+                        next_s = lol.previousSibling
+                        input += str(next_s).strip()
+                        if(i != len(pre_tag.findAll('br')) - 1):
+                            input += "\n"
+                        i += 1
+                    input_list.append(input)
+                else:
+                    for pt in pre_tag:
+                        input_list.append(pt.text[1:-1])
             else:
                 in_text = ""
                 i = 0
@@ -99,7 +112,7 @@ def TCScraper(site, ques):
                     i += 1
                 
                 input_list.append(in_text)
-        
+
         for output_div in output_divs:
             output = ""
             outpre_tag = output_div.find('pre')
@@ -117,14 +130,13 @@ def TCScraper(site, ques):
                         output += "\n"
                     i += 1
                 output_list.append(output)
-    
+            
         return input_list, output_list
 
 
 class problem_activity:
 
     def __init__(self):
-
         self.FILE_LIST = []
 
     def open_file(self, site, ques):
@@ -147,7 +159,48 @@ class problem_activity:
 
             self.FILE_LIST.append(file_name)
 
-    def check(site, ques):
+    def submit(self, site, ques, pages):
+
+        if(site == 'cf'):
+
+            file_name = site + "_" + ques + ".cpp"
+
+            file_path = f"{sys.path[0]}/{file_name}"
+
+            pages[1].goto('https://codeforces.com/problemset/submit')
+
+            pages[1].fill('[name="submittedProblemCode"]', ques)
+            with pages[1].expect_file_chooser() as fc_info:
+                pages[1].click('[name="sourceFile"]')
+
+            file_chooser = fc_info.value
+            file_chooser.set_files(file_path)
+            pages[1].click('[type="submit"]')
+
+            ## TODO : ADD SOME SORT OF LOADING WIDGET HERE !!!
+
+            ver = "TESTING"
+
+            while(ver == "TESTING"):
+                response = requests.get(f"https://codeforces.com/api/user.status?handle={config_dict['CF_USERNAME']}&from=1&count=1")
+                json_dict = json.loads(response.text)
+                stat = json_dict["status"]
+
+                if(stat != "OK"):
+                    continue
+                
+                ver = json_dict["result"][0]["verdict"]
+            
+            if(ver == "OK"):
+
+                print("ACCEPTED !!!")
+            
+            else:
+
+                print(ver)
+
+
+    def check(self, site, ques):
 
         inps, outs = TCScraper(site, ques)
         script = site + "_" + ques + ".cpp"
@@ -170,6 +223,3 @@ class problem_activity:
                 print(act_outs[i])
                 print("Actual output : ")
                 print(outs[i])
-
-        
-    

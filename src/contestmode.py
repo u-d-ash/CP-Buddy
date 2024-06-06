@@ -1,4 +1,8 @@
-from imports import *
+import os
+import sys
+from contestac import contest_activity
+from playwright.sync_api import sync_playwright
+from config import *
 
 class contestmode:
 
@@ -10,6 +14,23 @@ class contestmode:
     def play(self):
 
         contestActivity = contest_activity(self.site, self.link)
+
+        playwright = sync_playwright().start()
+        browser = playwright.chromium.launch(headless=False, slow_mo=200)
+        context = browser.new_context()
+
+        logpage = context.new_page()
+
+        if(self.site == 'cf'):
+            logpage.goto('https://codeforces.com/enter?back=/')
+            logpage.fill('[name="handleOrEmail"]', config_dict['CF_USERNAME'])
+            logpage.fill('[name="password"]', config_dict['CF_PASSWORD'])
+            logpage.click('[type="submit"]')
+        elif(self.site == 'at'):
+            logpage.goto('https://atcoder.jp/login?continue=https://atcoder.jp/')
+            logpage.fill('[name="username"]', config_dict['AT_USERNAME'])
+            logpage.fill('[name="password"]', config_dict['AT_PASSWORD'])
+            logpage.click('[type="submit"]')
 
         print("Setup complete !")
 
@@ -24,15 +45,9 @@ class contestmode:
             elif(p_command == "check"):
                 contestActivity.check(command_split[1])
             elif(p_command == "submit"):
-
-                contestActivity.submit(command_split[1])
-                
+                contestActivity.submit(command_split[1], logpage)
             elif(p_command == "rank"):
-                #lmao
-                print("rank")
-            elif(p_command == "myrank"):
-                #lmao
-                print("lol")
+                contestActivity.rank(command_split[1])
             elif(p_command == "exit"):
                 sys.exit(1)
             elif(p_command == "clear"):
