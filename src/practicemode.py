@@ -42,6 +42,14 @@ class practicemode:
             command = input()
             command_split = command.split(" ")
 
+            if(len(command_split) == 1):
+                if(command_split[0] == "exit"):
+                    sys.exit(1)
+                    continue
+                elif(command_split[0] == "clear"):
+                    os.system("clear")
+                    continue
+
             p_command = command_split[0]
             site = command_split[1]
             problem_id = command_split[2]
@@ -57,10 +65,3 @@ class practicemode:
             elif(p_command == "submit"):
                 #DONE
                 problemActivity.submit(site, problem_id, pages)
-
-            elif(p_command == "exit"):
-                sys.exit(1)
-            elif(p_command == "clear"):
-                os.system("clear")
-            else:
-                print("Enter valid command !\n")

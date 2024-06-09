@@ -7,6 +7,7 @@ from playwright.sync_api import sync_playwright
 import sys
 import requests
 import json
+from bs4 import BeautifulSoup
 
 def equality(stdout, output):
         
@@ -81,6 +82,9 @@ class contest_activity:
             list_index = ord(ques) - ord('A') + 1
 
             page.locator('[name="submittedProblemIndex"]').select_option(index = list_index)
+
+            page.locator('[name="programTypeId"]').select_option(label = "GNU G++17 7.3.0")
+
             with page.expect_file_chooser() as fc_info:
                 page.click('[name="sourceFile"]')
 
@@ -112,8 +116,47 @@ class contest_activity:
                 print(ver)
 
         elif(self.SITE == 'at'):
-            pass
 
+            file_path = f"{sys.path[0]}/{self.CONTEST.CONTEST_NAME}/{file_name}"
+
+            page.goto(f"https://atcoder.jp/contests/{self.CONTEST.CONTEST_NAME}/tasks/{self.CONTEST.CONTEST_NAME}_{ques.lower()}")
+
+            page.locator("[name='data.LanguageId']").select_option("C++ 17 (gcc 12.2)")
+
+            with page.expect_file_chooser() as fc_info:
+                page.click('[id="btn-open-file"]')
+
+            file_chooser = fc_info.value
+            file_chooser.set_files(file_path)
+
+            page.click('[id="submit"]')
+
+            verds = ['CE', 'IE', 'MLE', 'OLE', 'QLE', 'RE', 'TLE', 'WA', 'WR', 'AC']
+
+            verdict = None
+
+            while(verdict not in verds):
+
+                page.goto(f"https://atcoder.jp/contests/{self.CONTEST.CONTEST_NAME}/submissions/me")
+
+                cont = page.content()
+                soup = BeautifulSoup(cont, 'lxml')
+                table = soup.find('table')
+                tbod = table.find('tbody')
+                ross = tbod.find_all('tr')
+                verdict = ross[0].find_all('td')[6].text
+            
+            if(verdict == 'AC'):
+                print("ACCEPTED !!!")
+            elif(verdict == 'TLE'):
+                print("TIME LIMIT EXCEEDED !!!")
+            elif(verdict == 'WA'):
+                print("WRONG ANSWER !!!")
+            elif(verdict == 'MLE'):
+                print("MEMORY LIMIT EXCEEDED !!!")
+            else:
+                print(verdict)
+           
     def check(self, ques):
 
         inps, outs = self.CONTEST.get_testCases(ques)
@@ -138,30 +181,44 @@ class contest_activity:
                 print("Actual output : ")
                 print(outs[i])
 
-    def rank(self, username):
+    def rank(self, username, page):
 
-        cont_id = self.CONTEST.CONTEST_NAME[2:]
+        if(self.SITE == 'cf'):
+            cont_id = self.CONTEST.CONTEST_NAME[2:]
 
-        stat = "NOTOK"
+            stat = "NOTOK"
 
-        while(stat != "OK"):
+            while(stat != "OK"):
 
-            response = requests.get(f"https://codeforces.com/api/contest.standings?contestId={cont_id}&handles={username}")
-            resp_dict = json.loads(response.text)
+                response = requests.get(f"https://codeforces.com/api/contest.standings?contestId={cont_id}&handles={username}")
+                resp_dict = json.loads(response.text)
 
-            stat = resp_dict["status"]
-        
-        if(len(resp_dict["result"]["rows"]) == 0):
-            print(f"{username} is not participating in the contest")
-            return
-        
+                stat = resp_dict["status"]
+            
+            if(len(resp_dict["result"]["rows"]) == 0):
+                print(f"{username} is not participating in the contest")
+                return
+            
 
-        rank = resp_dict["result"]["rows"][0]["rank"]
-        points = resp_dict["result"]["rows"][0]["points"]
-        penalty = resp_dict["result"]["rows"][0]["penalty"]
+            rank = resp_dict["result"]["rows"][0]["rank"]
+            points = resp_dict["result"]["rows"][0]["points"]
+            penalty = resp_dict["result"]["rows"][0]["penalty"]
 
-        print(f"{username} is at rank {rank} with {points} points and {penalty} in penalties")
-        return
+            print(f"{username} is at rank {rank} with {points} points and {penalty} in penalties")
+        else:
+
+            page.goto(f"https://atcoder.jp/contests/{self.CONTEST.CONTEST_NAME}/standings")
+
+            page.locator('span:has-text("Customize")').click()
+
+            text_box = page.locator('[id="input-user"]')
+            text_box.fill(username)
+            ranks = page.locator('[class="standings-rank small80"]')
+            text = ranks.text_content()
+            rank = text.split(' ')[1][1:-1]
+
+            print(rank)
+
         
 
 

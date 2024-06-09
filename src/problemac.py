@@ -133,7 +133,6 @@ def TCScraper(site, ques):
             
         return input_list, output_list
 
-
 class problem_activity:
 
     def __init__(self):
@@ -141,7 +140,7 @@ class problem_activity:
 
     def open_file(self, site, ques):
 
-        file_name = site + "_" + ques + ".cpp"
+        file_name = site + "_" + ques.lower() + ".cpp"
 
         if(file_name in self.FILE_LIST):
 
@@ -163,7 +162,7 @@ class problem_activity:
 
         if(site == 'cf'):
 
-            file_name = site + "_" + ques + ".cpp"
+            file_name = site + "_" + ques.lower() + ".cpp"
 
             file_path = f"{sys.path[0]}/{file_name}"
 
@@ -198,6 +197,50 @@ class problem_activity:
             else:
 
                 print(ver)
+            
+        elif(site == 'at'):
+
+            file_name = site + "_" + ques.lower() + ".cpp"
+
+            file_path = f"{sys.path[0]}/{file_name}"
+
+            pages[0].goto(f"https://atcoder.jp/contests/{ques.lower()[:-1]}/tasks/{ques.lower()[:-1]}_{ques.lower()[-1:]}")
+
+            pages[0].locator("[name='data.LanguageId']").select_option("C++ 17 (gcc 12.2)")
+
+            with  pages[0].expect_file_chooser() as fc_info:
+                 pages[0].click('[id="btn-open-file"]')
+
+            file_chooser = fc_info.value
+            file_chooser.set_files(file_path)
+
+            pages[0].click('[id="submit"]')
+
+            verds = ['CE', 'IE', 'MLE', 'OLE', 'QLE', 'RE', 'TLE', 'WA', 'WR', 'AC']
+
+            verdict = None
+
+            while(verdict not in verds):
+
+                pages[0].goto(f"https://atcoder.jp/contests/{ques.lower()[:-1]}/submissions/me")
+
+                cont = pages[0].content()
+                soup = BeautifulSoup(cont, 'lxml')
+                table = soup.find('table')
+                tbod = table.find('tbody')
+                ross = tbod.find_all('tr')
+                verdict = ross[0].find_all('td')[6].text
+            
+            if(verdict == 'AC'):
+                print("ACCEPTED !!!")
+            elif(verdict == 'TLE'):
+                print("TIME LIMIT EXCEEDED !!!")
+            elif(verdict == 'WA'):
+                print("WRONG ANSWER !!!")
+            elif(verdict == 'MLE'):
+                print("MEMORY LIMIT EXCEEDED !!!")
+            else:
+                print(verdict)
 
 
     def check(self, site, ques):

@@ -16,7 +16,7 @@ class contestmode:
         contestActivity = contest_activity(self.site, self.link)
 
         playwright = sync_playwright().start()
-        browser = playwright.chromium.launch(headless=False, slow_mo=200)
+        browser = playwright.chromium.launch(headless=True)
         context = browser.new_context()
 
         logpage = context.new_page()
@@ -47,7 +47,7 @@ class contestmode:
             elif(p_command == "submit"):
                 contestActivity.submit(command_split[1], logpage)
             elif(p_command == "rank"):
-                contestActivity.rank(command_split[1])
+                contestActivity.rank(command_split[1], logpage)
             elif(p_command == "exit"):
                 sys.exit(1)
             elif(p_command == "clear"):
