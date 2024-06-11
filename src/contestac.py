@@ -2,12 +2,13 @@ import os
 import subprocess
 from atwebscrape import atwebscrape
 from cfwebscrape import cfwebscrape
-from config import config_dict
+from config import *
 from playwright.sync_api import sync_playwright
 import sys
 import requests
 import json
 from bs4 import BeautifulSoup
+from alive_progress import alive_bar
 
 def equality(stdout, output):
         
@@ -49,7 +50,8 @@ class contest_activity:
         # Generating working directory
 
         root_dir = self.CONTEST.CONTEST_NAME
-        os.mkdir(root_dir)
+        self.ROOTPATH = f"{ROOTFOLDER}/{root_dir}"
+        os.mkdir(self.ROOTPATH)
 
         questions = self.CONTEST.QUESTION_NAMES
 
@@ -58,14 +60,14 @@ class contest_activity:
 
         for quest in questions:
 
-            file_name = os.path.join(root_dir, quest + ".cpp")
+            file_name = os.path.join(self.ROOTPATH, quest + ".cpp")
 
             with open(file_name, "w") as f:
                 f.write(template_content)
         
     def open_file(self, ques):
  
-        os.system(f"code {self.CONTEST.CONTEST_NAME}/{ques}.cpp")
+        os.system(f"code {self.ROOTPATH}/{ques}.cpp")
      
     def submit(self, ques, page):
     
@@ -73,7 +75,7 @@ class contest_activity:
             
             file_name = ques + ".cpp"
 
-            file_path = f"{sys.path[0]}/{self.CONTEST.CONTEST_NAME}/{file_name}"
+            file_path = f"{self.ROOTPATH}/{file_name}"
 
             cont_id = self.CONTEST.CONTEST_NAME[2:]
 
@@ -92,20 +94,23 @@ class contest_activity:
             file_chooser.set_files(file_path)
             page.click('[value = "Submit"]')
 
-            ## TODO : ADD SOME SORT OF LOADING WIDGET HERE !!!
 
             ver = "TESTING"
 
-            while(ver == "TESTING"):
-                response = requests.get(f"https://codeforces.com/api/user.status?handle={config_dict['CF_USERNAME']}&from=1&count=1")
-                json_dict = json.loads(response.text)
+            with alive_bar(total=None, bar = None, spinner = 'classic', elapsed = False, monitor = False, stats = False) as bar:
 
-                stat = json_dict["status"]
+                while(ver == "TESTING"):
+                    response = requests.get(f"https://codeforces.com/api/user.status?handle={config_dict['CF_USERNAME']}&from=1&count=1")
+                    json_dict = json.loads(response.text)
 
-                if(stat != "OK"):
-                    continue
-                
-                ver = json_dict["result"][0]["verdict"]
+                    stat = json_dict["status"]
+
+                    if(stat != "OK"):
+                        continue
+                    
+                    ver = json_dict["result"][0]["verdict"]
+
+                    bar()
             
             if(ver == "OK"):
 
@@ -117,7 +122,7 @@ class contest_activity:
 
         elif(self.SITE == 'at'):
 
-            file_path = f"{sys.path[0]}/{self.CONTEST.CONTEST_NAME}/{file_name}"
+            file_path = f"{self.ROOTPATH}/{file_name}"
 
             page.goto(f"https://atcoder.jp/contests/{self.CONTEST.CONTEST_NAME}/tasks/{self.CONTEST.CONTEST_NAME}_{ques.lower()}")
 
@@ -135,16 +140,18 @@ class contest_activity:
 
             verdict = None
 
-            while(verdict not in verds):
+            with alive_bar(total=None, bar = None, spinner = 'classic', elapsed = False, monitor = False, stats = False) as bar:
 
-                page.goto(f"https://atcoder.jp/contests/{self.CONTEST.CONTEST_NAME}/submissions/me")
+                while(verdict not in verds):
 
-                cont = page.content()
-                soup = BeautifulSoup(cont, 'lxml')
-                table = soup.find('table')
-                tbod = table.find('tbody')
-                ross = tbod.find_all('tr')
-                verdict = ross[0].find_all('td')[6].text
+                    page.goto(f"https://atcoder.jp/contests/{self.CONTEST.CONTEST_NAME}/submissions/me")
+
+                    cont = page.content()
+                    soup = BeautifulSoup(cont, 'lxml')
+                    table = soup.find('table')
+                    tbod = table.find('tbody')
+                    ross = tbod.find_all('tr')
+                    verdict = ross[0].find_all('td')[6].text
             
             if(verdict == 'AC'):
                 print("ACCEPTED !!!")
@@ -164,7 +171,7 @@ class contest_activity:
         passed = []
         act_outs = []
         for i in range(len(inps)):
-            command = f'g++ {self.CONTEST.CONTEST_NAME}/{script} -o {script[:-4]} && ./{script[:-4]}'
+            command = f'g++ {self.ROOTPATH}/{script} -o {self.ROOTPATH}/{script[:-4]} && chmod +x {self.ROOTPATH}/{script[:-4]} && {self.ROOTPATH}/{script[:-4]}'
             process = subprocess.Popen([command], stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin = subprocess.PIPE, shell=True, text = True)
             stdout = process.communicate(input=inps[i])[0]
             act_outs.append(stdout)
@@ -217,9 +224,8 @@ class contest_activity:
             text = ranks.text_content()
             rank = text.split(' ')[1][1:-1]
 
-            print(rank)
+            print(f"{username} is at rank {rank}")
 
-        
 
 
 

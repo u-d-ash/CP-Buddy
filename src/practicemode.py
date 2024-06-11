@@ -3,34 +3,37 @@ import sys
 from problemac import problem_activity
 from playwright.sync_api import sync_playwright
 from config import config_dict
+from alive_progress import alive_bar
 
 class practicemode:
 
     def play(self):
 
-        problemActivity = problem_activity()
+        with alive_bar(total=None, bar = None, spinner = 'classic', elapsed = False, monitor = False, stats = False, title = "Setting Up...") as bar:
 
-        playwright = sync_playwright().start()
-        browser = playwright.chromium.launch(headless=True)
-        context = browser.new_context()
+            problemActivity = problem_activity()
 
-        cf_logpage = context.new_page()
-        at_logpage = context.new_page()
+            playwright = sync_playwright().start()
+            browser = playwright.chromium.launch(headless=True)
+            context = browser.new_context()
 
-        cf_logpage.goto('https://codeforces.com/enter?back=/')
-        cf_logpage.fill('[name="handleOrEmail"]', config_dict['CF_USERNAME'])
-        cf_logpage.fill('[name="password"]', config_dict['CF_PASSWORD'])
-        cf_logpage.click('[type="submit"]')
+            cf_logpage = context.new_page()
+            at_logpage = context.new_page()
 
-        cf_logpage.wait_for_url('https://codeforces.com/')
+            cf_logpage.goto('https://codeforces.com/enter?back=%2F')
+            cf_logpage.fill('[name="handleOrEmail"]', config_dict['CF_USERNAME'])
+            cf_logpage.fill('[name="password"]', config_dict['CF_PASSWORD'])
+            cf_logpage.click('[type="submit"]')
 
-        at_logpage.goto('https://atcoder.jp/login?continue=https://atcoder.jp/')
-        at_logpage.fill('[name="username"]', config_dict['AT_USERNAME'])
-        at_logpage.fill('[name="password"]', config_dict['AT_PASSWORD'])
+            cf_logpage.wait_for_url('https://codeforces.com/')
 
-        at_logpage.click('[type="submit"]')
+            at_logpage.goto('https://atcoder.jp/login?continue=https://atcoder.jp/')
+            at_logpage.fill('[name="username"]', config_dict['AT_USERNAME'])
+            at_logpage.fill('[name="password"]', config_dict['AT_PASSWORD'])
 
-        pages = [at_logpage, cf_logpage]
+            at_logpage.click('[type="submit"]')
+
+            pages = [at_logpage, cf_logpage]
 
         print("Setup complete !")
 

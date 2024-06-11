@@ -13,6 +13,11 @@
 #include <cstring>
 #include <stack>
 
+/*
+i just need to get it off my chest more than you know.. yeah, more than you know ...
+you should know that baby, you're the best.. yeah, more than you know...
+*/
+
 #define ll long long
 #define pb push_back
 #define pf push_front
@@ -30,7 +35,7 @@
 #define rep(i, n) for(int i = 0; i < n; ++i)
 #define dbg(x) cerr << x << endl;
 
-//author: @u_d_ash_
+//author: @oye.udi.udi
 
 using namespace std;
 using namespace std::chrono;

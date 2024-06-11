@@ -4,3 +4,5 @@ config_dict = {
     'AT_USERNAME' : "",
     'AT_PASSWORD' : ""
 }
+
+ROOTFOLDER = ""

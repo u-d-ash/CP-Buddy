@@ -6,8 +6,11 @@ import requests
 from config import *
 from bs4 import BeautifulSoup
 import json
+from alive_progress import alive_bar
+from os import listdir
+from os.path import splitext
+from config import *
 
-# For check function
 def equality(stdout, output):
         
     std = stdout.split("\n")
@@ -136,25 +139,27 @@ def TCScraper(site, ques):
 class problem_activity:
 
     def __init__(self):
-        self.FILE_LIST = []
+        self.FILE_LIST = [f for f in listdir(ROOTFOLDER) if splitext(f)[1] == '.cpp']
 
     def open_file(self, site, ques):
 
         file_name = site + "_" + ques.lower() + ".cpp"
 
+        file_path = f"{ROOTFOLDER}/{file_name}"
+
         if(file_name in self.FILE_LIST):
 
-            os.system(f"code {file_name}")
+            os.system(f"code {file_path}")
         
         else:
 
             with open("template.cpp", "r") as f:
                 template_content = f.read()
         
-            with open(file_name, "w") as f:
+            with open(file_path, "w") as f:
                 f.write(template_content)
     
-            os.system(f"code {file_name}")
+            os.system(f"code {file_path}")
 
             self.FILE_LIST.append(file_name)
 
@@ -162,33 +167,33 @@ class problem_activity:
 
         if(site == 'cf'):
 
-            file_name = site + "_" + ques.lower() + ".cpp"
+            with alive_bar(total=None, bar = None, spinner = 'classic', elapsed = False, monitor = False, stats = False, title = "Waiting for verdict...") as bar:
 
-            file_path = f"{sys.path[0]}/{file_name}"
+                file_name = site + "_" + ques.lower() + ".cpp"
 
-            pages[1].goto('https://codeforces.com/problemset/submit')
+                file_path = f"{ROOTFOLDER}/{file_name}"
 
-            pages[1].fill('[name="submittedProblemCode"]', ques)
-            with pages[1].expect_file_chooser() as fc_info:
-                pages[1].click('[name="sourceFile"]')
+                pages[1].goto('https://codeforces.com/problemset/submit')
 
-            file_chooser = fc_info.value
-            file_chooser.set_files(file_path)
-            pages[1].click('[type="submit"]')
+                pages[1].fill('[name="submittedProblemCode"]', ques)
+                with pages[1].expect_file_chooser() as fc_info:
+                    pages[1].click('[name="sourceFile"]')
 
-            ## TODO : ADD SOME SORT OF LOADING WIDGET HERE !!!
+                file_chooser = fc_info.value
+                file_chooser.set_files(file_path)
+                pages[1].click('[type="submit"]')
 
-            ver = "TESTING"
-
-            while(ver == "TESTING"):
-                response = requests.get(f"https://codeforces.com/api/user.status?handle={config_dict['CF_USERNAME']}&from=1&count=1")
-                json_dict = json.loads(response.text)
-                stat = json_dict["status"]
-
-                if(stat != "OK"):
-                    continue
+                ver = "TESTING"
                 
-                ver = json_dict["result"][0]["verdict"]
+                while(ver == "TESTING"):
+                    response = requests.get(f"https://codeforces.com/api/user.status?handle={config_dict['CF_USERNAME']}&from=1&count=1")
+                    json_dict = json.loads(response.text)
+                    stat = json_dict["status"]
+
+                    if(stat != "OK"):
+                        continue
+                    
+                    ver = json_dict["result"][0]["verdict"]
             
             if(ver == "OK"):
 
@@ -200,36 +205,36 @@ class problem_activity:
             
         elif(site == 'at'):
 
-            file_name = site + "_" + ques.lower() + ".cpp"
+            with alive_bar(total=None, bar = None, spinner = 'classic', elapsed = False, monitor = False, stats = False, title = "Waiting for verdict...") as bar:
 
-            file_path = f"{sys.path[0]}/{file_name}"
+                file_name = site + "_" + ques.lower() + ".cpp"
 
-            pages[0].goto(f"https://atcoder.jp/contests/{ques.lower()[:-1]}/tasks/{ques.lower()[:-1]}_{ques.lower()[-1:]}")
+                file_path = f"{ROOTFOLDER}/{file_name}"
 
-            pages[0].locator("[name='data.LanguageId']").select_option("C++ 17 (gcc 12.2)")
+                pages[0].goto(f"https://atcoder.jp/contests/{ques.lower()[:-1]}/tasks/{ques.lower()[:-1]}_{ques.lower()[-1:]}")
 
-            with  pages[0].expect_file_chooser() as fc_info:
-                 pages[0].click('[id="btn-open-file"]')
+                pages[0].locator("[name='data.LanguageId']").select_option("C++ 17 (gcc 12.2)")
 
-            file_chooser = fc_info.value
-            file_chooser.set_files(file_path)
+                with  pages[0].expect_file_chooser() as fc_info:
+                    pages[0].click('[id="btn-open-file"]')
 
-            pages[0].click('[id="submit"]')
+                file_chooser = fc_info.value
+                file_chooser.set_files(file_path)
 
-            verds = ['CE', 'IE', 'MLE', 'OLE', 'QLE', 'RE', 'TLE', 'WA', 'WR', 'AC']
+                pages[0].click('[id="submit"]')
 
-            verdict = None
+                verds = ['CE', 'IE', 'MLE', 'OLE', 'QLE', 'RE', 'TLE', 'WA', 'WR', 'AC']
 
-            while(verdict not in verds):
+                while(verdict not in verds):
 
-                pages[0].goto(f"https://atcoder.jp/contests/{ques.lower()[:-1]}/submissions/me")
+                    pages[0].goto(f"https://atcoder.jp/contests/{ques.lower()[:-1]}/submissions/me")
 
-                cont = pages[0].content()
-                soup = BeautifulSoup(cont, 'lxml')
-                table = soup.find('table')
-                tbod = table.find('tbody')
-                ross = tbod.find_all('tr')
-                verdict = ross[0].find_all('td')[6].text
+                    cont = pages[0].content()
+                    soup = BeautifulSoup(cont, 'lxml')
+                    table = soup.find('table')
+                    tbod = table.find('tbody')
+                    ross = tbod.find_all('tr')
+                    verdict = ross[0].find_all('td')[6].text
             
             if(verdict == 'AC'):
                 print("ACCEPTED !!!")
@@ -250,7 +255,7 @@ class problem_activity:
         passed = []
         act_outs = []
         for i in range(len(inps)):
-            command = f'g++ {script} -o {script[:-4]} && ./{script[:-4]}'
+            command = f'g++ {ROOTFOLDER}/{script} -o {ROOTFOLDER}/{script[:-4]} && chmod +x {ROOTFOLDER}/{script[:-4]} && {ROOTFOLDER}/{script[:-4]}'
             process = subprocess.Popen([command], stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin = subprocess.PIPE, shell=True, text = True)
             stdout = process.communicate(input=inps[i])[0]
             act_outs.append(stdout)

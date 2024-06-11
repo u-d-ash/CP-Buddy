@@ -31,6 +31,7 @@ class cfwebscrape:
         
         self.QUESTION_NAMES = questions
     
+    
     def get_testCases(self, ques):
         
         # ques = A, B... etc
@@ -89,7 +90,7 @@ class cfwebscrape:
     
         return input_list, output_list
 
-
+        
 
 
 

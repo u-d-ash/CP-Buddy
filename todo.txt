@@ -1,6 +1,0 @@
-TODO:
---------
-* AtCoder Submit & Rank : For Practice Mode & Contest Mode
-* Finishing Touches : Directory Management, Loading Widgets, Bug Fixing
-* Testing
-* Deployment

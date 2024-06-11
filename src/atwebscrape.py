@@ -23,6 +23,7 @@ class atwebscrape:
 
         self.QUESTION_NAMES = names
     
+    
     def get_testCases(self, ques):
         ques_link = self.CONTEST_LINK + "/tasks/" + self.CONTEST_NAME + "_" + ques.lower()
 
@@ -49,3 +50,4 @@ class atwebscrape:
                 output_list.append(tcs[i])
         
         return input_list, output_list
+    
