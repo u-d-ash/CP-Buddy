@@ -22,6 +22,7 @@ Enter CP-Buddy.
 2. Setup the `config.py` file
     * Add the login credintials in the `CONFIG_DICT`
     * Add the path to your directory where all your files will go in `ROOTFOLDER`
+3. Add your own template in `template.cpp` file *or you can use mine ;)*
 
 #### Features
 
