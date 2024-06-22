@@ -54,8 +54,9 @@ Commands:
 > It's still in a developing stage. I am trying to use it as much as I can and solving bugs on the way.
 
 ### In Action
+#### Practice Mode
 <p align = "center">
-  <img src="https://github.com/u-d-ash/CP-Buddy/blob/main/yo.png" align = "center" alt="drawing" width="321" height="465.5"/>
+  <img src="https://github.com/u-d-ash/CP-Buddy/blob/main/yo.png" align = "center" alt="drawing" width="325" height="598"/>
 </p>
 
 ---
