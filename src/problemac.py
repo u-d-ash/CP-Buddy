@@ -225,6 +225,8 @@ class problem_activity:
 
                 verds = ['CE', 'IE', 'MLE', 'OLE', 'QLE', 'RE', 'TLE', 'WA', 'WR', 'AC']
 
+                verdict = 'WJ'
+
                 while(verdict not in verds):
 
                     pages[0].goto(f"https://atcoder.jp/contests/{ques.lower()[:-1]}/submissions/me")

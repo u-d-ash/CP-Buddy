@@ -110,7 +110,6 @@ class contest_activity:
                     
                     ver = json_dict["result"][0]["verdict"]
 
-                    bar()
             
             if(ver == "OK"):
 
