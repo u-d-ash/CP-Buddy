@@ -23,6 +23,7 @@ Enter CP-Buddy.
     * Add the login credintials in the `CONFIG_DICT`
     * Add the path to your directory where all your files will go in `ROOTFOLDER`
 3. Add your own template in `template.cpp` file *or you can use mine ;)*
+4. Make sure you have VSCode installed, that's the only editor it supports as of now.
 
 #### Features
 
@@ -50,6 +51,11 @@ Commands:
 2. `check {site} {problem-id}`
 3. `submit {site} {problem-id}`
 
-> It's still in a "beta" stage. *"lmao"*. Personally I haven't used it a lot and it's being continuously developed.
+> It's still in a developing stage. I am trying to use it as much as I can and solving bugs on the way.
+
+### In Action
+<p align = "center">
+  <img src="https://github.com/u-d-ash/CP-Buddy/blob/main/yo.png" align = "center" alt="drawing" width="321" height="465.5"/>
+</p>
 
 ---
