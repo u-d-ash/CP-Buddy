@@ -1,8 +1,8 @@
 import os
 import sys
-from contestac import contest_activity
+from cp_buddy.contestac import contest_activity
 from playwright.sync_api import sync_playwright
-from config import *
+from cp_buddy.config import *
 from alive_progress import alive_bar
 
 class contestmode:

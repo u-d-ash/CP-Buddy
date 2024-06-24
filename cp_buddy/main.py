@@ -1,7 +1,7 @@
 import sys
-from contestmode import contestmode
-from practicemode import practicemode
-from config import *
+from cp_buddy.contestmode import contestmode
+from cp_buddy.practicemode import practicemode
+from cp_buddy.config import *
 
 def main():
     # usage (contest mode): 

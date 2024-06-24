@@ -1,15 +1,13 @@
 import os
-import sys
 import subprocess
 from playwright.sync_api import sync_playwright
 import requests
-from config import *
+from cp_buddy.config import *
 from bs4 import BeautifulSoup
 import json
 from alive_progress import alive_bar
 from os import listdir
 from os.path import splitext
-from config import *
 
 def equality(stdout, output):
         
@@ -153,11 +151,15 @@ class problem_activity:
         
         else:
 
+            from pathlib import Path
+            this_directory = Path(__file__).parent
+            temp_code = (this_directory/"template.cpp").read_text()
+            """
             with open("template.cpp", "r") as f:
                 template_content = f.read()
-        
+            """
             with open(file_path, "w") as f:
-                f.write(template_content)
+                f.write(temp_code)
     
             os.system(f"code {file_path}")
 

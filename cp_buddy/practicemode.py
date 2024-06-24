@@ -1,8 +1,8 @@
 import os
 import sys
-from problemac import problem_activity
+from cp_buddy.problemac import problem_activity
 from playwright.sync_api import sync_playwright
-from config import config_dict
+from cp_buddy.config import config_dict
 from alive_progress import alive_bar
 
 class practicemode:

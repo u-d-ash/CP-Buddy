@@ -1,10 +1,9 @@
 import os
 import subprocess
-from atwebscrape import atwebscrape
-from cfwebscrape import cfwebscrape
-from config import *
+from cp_buddy.atwebscrape import atwebscrape
+from cp_buddy.cfwebscrape import cfwebscrape
+from cp_buddy.config import *
 from playwright.sync_api import sync_playwright
-import sys
 import requests
 import json
 from bs4 import BeautifulSoup
@@ -55,15 +54,19 @@ class contest_activity:
 
         questions = self.CONTEST.QUESTION_NAMES
 
-        with open("template.cpp", "r") as f:
+        from pathlib import Path
+        this_directory = Path(__file__).parent
+        temp_code = (this_directory/"template.cpp").read_text()
+        """
+        with open(this_directory"/template.cpp", "r") as f:
             template_content = f.read()
-
+        """
         for quest in questions:
 
             file_name = os.path.join(self.ROOTPATH, quest + ".cpp")
 
             with open(file_name, "w") as f:
-                f.write(template_content)
+                f.write(temp_code)
         
     def open_file(self, ques):
  
